@@ -15,7 +15,7 @@ hotelRouter.get("/getAllBooking", hotelController.getAllBookings);
 hotelRouter.get("/getHotels", hotelController.getHotels);
 hotelRouter.get("/getUnbookedRooms/:id", hotelController.getunBookedRooms);
 hotelRouter.get("/search/:value", hotelController.searchHotel);
-hotelRouter.get("/searchBookings/:name", hotelController.searchBookings);
+hotelRouter.get("/booking/search/:name", hotelController.searchBookings);
 hotelRouter.delete("/deleteHotel/:id", hotelController.deleteHotel);
 
 module.exports =  hotelRouter;
