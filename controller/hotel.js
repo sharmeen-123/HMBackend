@@ -1,5 +1,6 @@
 const Hotel = require("../models/hotel");
 const schedule = require("node-schedule");
+const mongoose = require("mongoose");
 
 // book a room
 const deleteBooking = async () => {
@@ -187,6 +188,84 @@ const hotelController = {
         });
     } catch (error) {
       // Handle any unexpected errors
+      res.status(500).send({
+        success: false,
+        data: { error: "Server Error" },
+      });
+    }
+  },
+
+   // get all bookings
+   async getBookings(req, res) {
+    try {
+      const id = req.params.id
+      console.log("id is", id)
+      const bookedRooms = await Hotel.aggregate([
+        // Match the hotel by its ID
+        { $match: { _id: mongoose.Types.ObjectId(id) } },
+        // Unwind the rooms array
+        { $unwind: '$rooms' },
+        // Match rooms where isBooked is true
+        { $match: { 'rooms.isBooked': true } },
+        // Perform a lookup to join with the user collection
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'rooms.customer',
+            foreignField: '_id',
+            as: 'rooms.customerDetails'
+          }
+        },
+        // Unwind the customerDetails array
+        { $unwind: { path: '$rooms.customerDetails', preserveNullAndEmptyArrays: true } },
+        // Project the required fields
+        {
+          $project: {
+            name: 1,
+            image: 1,
+            location: 1,
+            totalRooms: 1,
+            'rooms.roomType': 1,
+            'rooms.roomNumber': 1,
+            'rooms.isBooked': 1,
+            'rooms.Booking': 1,
+            'rooms.customerDetails.name': 1,
+            'rooms.customerDetails.image': 1
+          }
+        },
+        // Group back to hotel with filtered rooms
+        {
+          $group: {
+            _id: '$_id',
+            name: { $first: '$name' },
+            image: { $first: '$image' },
+            location: { $first: '$location' },
+            totalRooms: { $first: '$totalRooms' },
+            rooms: { $push: '$rooms' }
+          }
+        }
+      ]);
+
+      if (bookedRooms) {
+        if (bookedRooms.length > 0 && bookedRooms[0].rooms.length > 0) {
+          return res.status(200).send({
+            success: true,
+            data: { message: "Rooms Found", rooms: bookedRooms[0].rooms },
+          });
+        } else {
+          return res.status(404).send({
+            success: false,
+            data: { message: "No booked rooms found", rooms:[] },
+          });
+        }
+      } else {
+        return res
+          .status(400)
+          .send({ success: false, data: { error: err.message } });
+      }
+    } catch (error) {
+      // Handle any unexpected errors
+      console.log(error)
       res.status(500).send({
         success: false,
         data: { error: "Server Error" },

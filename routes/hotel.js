@@ -10,6 +10,7 @@ uploadMiddleware.single("file"),
  hotelController.addHotel);
 hotelRouter.put("/updateHotel/:id", hotelController.editHotel);
 hotelRouter.put("/bookRoom/:id", hotelController.bookRoom);
+hotelRouter.get("/getBookedRooms/:id", hotelController.getBookings);
 hotelRouter.get("/getHotels", hotelController.getHotels);
 hotelRouter.get("/getUnbookedRooms/:id", hotelController.getunBookedRooms);
 hotelRouter.get("/search/:value", hotelController.searchHotel);
