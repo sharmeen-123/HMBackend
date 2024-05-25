@@ -10,10 +10,12 @@ uploadMiddleware.single("file"),
  hotelController.addHotel);
 hotelRouter.put("/updateHotel/:id", hotelController.editHotel);
 hotelRouter.put("/bookRoom/:id", hotelController.bookRoom);
-hotelRouter.get("/getBookedRooms/:id", hotelController.getBookings);
+hotelRouter.get("/getBookedRooms/:id", hotelController.getHotelBookings);
+hotelRouter.get("/getAllBooking", hotelController.getAllBookings);
 hotelRouter.get("/getHotels", hotelController.getHotels);
 hotelRouter.get("/getUnbookedRooms/:id", hotelController.getunBookedRooms);
 hotelRouter.get("/search/:value", hotelController.searchHotel);
+hotelRouter.get("/searchBookings/:name", hotelController.searchBookings);
 hotelRouter.delete("/deleteHotel/:id", hotelController.deleteHotel);
 
 module.exports =  hotelRouter;
